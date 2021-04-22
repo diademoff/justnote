@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:justnote/TextFormatter.dart';
 
 void main() {
   runApp(App());
@@ -66,6 +67,19 @@ class _App extends State<App> {
   }
 
   void addNumberToTextField() {
+    var formatter = TextFormatter(textFieldController.text);
 
+    formatter.removeWhiteLines();
+    if (!formatter.isNumberAdded()) {
+      formatter.addNumber();
+    }
+
+    textFieldController.text = formatter.formattedText;
+    setCursorToEnd();
+  }
+
+  void setCursorToEnd() {
+    textFieldController.selection = TextSelection.fromPosition(
+        TextPosition(offset: textFieldController.text.length));
   }
 }
