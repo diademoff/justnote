@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:justnote/TextFormatter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(App());
@@ -14,8 +15,14 @@ class _App extends State<App> {
   bool isTextHidden = true;
   TextEditingController textFieldController = new TextEditingController();
 
+  bool _firstBuild = true;
   @override
   Widget build(BuildContext context) {
+    if (_firstBuild) {
+      _firstBuild = false;
+      loadTextField();
+    }
+    
     return MaterialApp(
       home: Scaffold(
         appBar: getAppBar(),
@@ -28,6 +35,7 @@ class _App extends State<App> {
             maxLines: null,
             keyboardType: TextInputType.multiline,
             controller: textFieldController,
+            onChanged: (s) => {saveTextField()},
           ),
         ),
       ),
@@ -64,6 +72,21 @@ class _App extends State<App> {
     } else {
       return Colors.black87;
     }
+  }
+
+  void saveTextField() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'text';
+    final value = textFieldController.text;
+
+    prefs.setString(key, value);
+  }
+
+  void loadTextField() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'text';
+
+    textFieldController.text = prefs.getString(key) ?? "";
   }
 
   void addNumberToTextField() {
