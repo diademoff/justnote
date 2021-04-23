@@ -13,6 +13,7 @@ class App extends StatefulWidget {
 
 class _App extends State<App> {
   bool isTextHidden = true;
+  bool isDarkTheme = false;
   TextEditingController textFieldController = new TextEditingController();
 
   bool _firstBuild = true;
@@ -21,10 +22,11 @@ class _App extends State<App> {
     // This condition is met on first build.
     if (_firstBuild) {
       _firstBuild = false;
-      loadTextField();
+      loadStoredData();
     }
 
     return MaterialApp(
+      theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         appBar: getAppBar(),
         body: Container(
@@ -36,7 +38,7 @@ class _App extends State<App> {
             maxLines: null,
             keyboardType: TextInputType.multiline,
             controller: textFieldController,
-            onChanged: (s) => {saveTextField()},
+            onChanged: (s) => {saveDataToStorage()},
           ),
         ),
       ),
@@ -57,6 +59,14 @@ class _App extends State<App> {
       title: Text("Just Note"),
       actions: [
         IconButton(
+          icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2) , 
+          onPressed: (){
+            setState(() {
+              isDarkTheme = !isDarkTheme;
+              saveDataToStorage();
+            });
+          }),
+        IconButton(
           icon: Icon(Icons.accessible_forward),
           onPressed: () {
             setState(() {
@@ -72,27 +82,38 @@ class _App extends State<App> {
   /// want to make the text visible
   Color getTextColor(bool isTextHidden) {
     if (isTextHidden) {
-      return Colors.white;
+      if (isDarkTheme) {
+        return Colors.grey[850];
+      } else {
+        return Colors.white;
+      }
     } else {
-      return Colors.black87;
+      if (isDarkTheme) {
+        return Colors.white;
+      } else {
+        return Colors.black87;
+      }
     }
   }
 
   /// Save the content of text field to memeory
-  void saveTextField() async {
+  void saveDataToStorage() async {
     final prefs = await SharedPreferences.getInstance();
-    final key = 'text';
-    final value = textFieldController.text;
 
-    prefs.setString(key, value);
+    prefs.setString('text', textFieldController.text);
+    prefs.setBool('is_dark_theme', isDarkTheme);
   }
 
-  /// Retrieve the text stored in memory and write it to the text field.
-  void loadTextField() async {
+  /// * Retrieve the text stored in memory and write it to the text field.
+  /// * Gets if the dark theme is used
+  void loadStoredData() async {
     final prefs = await SharedPreferences.getInstance();
-    final key = 'text';
 
-    textFieldController.text = prefs.getString(key) ?? "";
+    textFieldController.text = prefs.getString('text') ?? "";
+
+    setState(() {
+      isDarkTheme = prefs.getBool('is_dark_theme') ?? false;
+    });
   }
 
   /// Remove blank lines and add the next consecutive number at the end of the text box
