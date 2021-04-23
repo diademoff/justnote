@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:justnote/TextFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const String appName = "Just Note";
+
 void main() {
   runApp(App());
 }
@@ -26,6 +28,7 @@ class _App extends State<App> {
     }
 
     return MaterialApp(
+      title: appName,
       theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         appBar: getAppBar(),
@@ -57,7 +60,7 @@ class _App extends State<App> {
           });
         },
       ),
-      title: Text("Just Note"),
+      title: Text(appName),
       actions: [
         IconButton(
             icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2),
