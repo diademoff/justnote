@@ -18,11 +18,12 @@ class _App extends State<App> {
   bool _firstBuild = true;
   @override
   Widget build(BuildContext context) {
+    // This condition is met on first build.
     if (_firstBuild) {
       _firstBuild = false;
       loadTextField();
     }
-    
+
     return MaterialApp(
       home: Scaffold(
         appBar: getAppBar(),
@@ -42,6 +43,7 @@ class _App extends State<App> {
     );
   }
 
+  /// The top line of the application with buttons.
   AppBar getAppBar() {
     return AppBar(
       leading: IconButton(
@@ -66,6 +68,8 @@ class _App extends State<App> {
     );
   }
 
+  /// Get text field foreground color depending on whether you
+  /// want to make the text visible
   Color getTextColor(bool isTextHidden) {
     if (isTextHidden) {
       return Colors.white;
@@ -74,6 +78,7 @@ class _App extends State<App> {
     }
   }
 
+  /// Save the content of text field to memeory
   void saveTextField() async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'text';
@@ -82,6 +87,7 @@ class _App extends State<App> {
     prefs.setString(key, value);
   }
 
+  /// Retrieve the text stored in memory and write it to the text field.
   void loadTextField() async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'text';
@@ -89,6 +95,7 @@ class _App extends State<App> {
     textFieldController.text = prefs.getString(key) ?? "";
   }
 
+  /// Remove blank lines and add the next consecutive number at the end of the text box
   void addNumberToTextField() {
     var formatter = TextFormatter(textFieldController.text);
 

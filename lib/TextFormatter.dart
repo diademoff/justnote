@@ -5,7 +5,7 @@ class TextFormatter {
   TextFormatter(this._text);
 
   /// Removes white lines
-  /// If there are a lot of spaces, then only one will be left
+  /// If there are a lot of spaces, then only one will be left.
   void removeWhiteLines() {
     int countOfUnnecessaryChars = 0;
     bool wasSpace = false;
@@ -25,6 +25,12 @@ class TextFormatter {
     _text += wasSpace ? " " : "";
   }
 
+  /// Is the last line of text numbered.
+  /// 
+  /// Examples:
+  /// * `1. ` -> true
+  /// * `1. some text` -> false
+  /// * `some text` -> false
   bool isNumberAdded() {
     var lines = _text.split('\n');
     var lastLine = lines[lines.length - 1];
@@ -38,12 +44,14 @@ class TextFormatter {
     return false;
   }
 
+  /// Add next number to the end of text field, like: `5. `.
   void addNumber() {
     int nextNum = _getNextNum();
-    String newLine = needNewLine() ? "\n" : "";
+    String newLine = _needNewLine() ? "\n" : "";
     _text += "$newLine$nextNum. ";
   }
 
+  /// Get the last used number in the numbering and add one to it.
   int _getNextNum() {
     if (_text.trim().isEmpty) {
       return 1;
@@ -64,7 +72,8 @@ class TextFormatter {
     return 1;
   }
 
-  bool needNewLine() {
+  /// New line is required if the new line has not been done yet. 
+  bool _needNewLine() {
     if (_text.trim().isEmpty) {
       return false;
     }
@@ -75,6 +84,7 @@ class TextFormatter {
     if (lastLine.trim().isNotEmpty) {
       return true;
     }
+
     return false;
   }
 }
