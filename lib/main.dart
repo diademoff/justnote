@@ -34,7 +34,8 @@ class _App extends State<App> {
           constraints: BoxConstraints.expand(),
           child: TextField(
             autofocus: true,
-            style: TextStyle(fontSize: 18.0, color: getTextColor(isTextHidden)),
+            style: TextStyle(
+                fontSize: 18.0, fontFamily: getFontFamily(isTextHidden)),
             maxLines: null,
             keyboardType: TextInputType.multiline,
             controller: textFieldController,
@@ -49,7 +50,7 @@ class _App extends State<App> {
   AppBar getAppBar() {
     return AppBar(
       leading: IconButton(
-        icon: Icon(Icons.add_a_photo),
+        icon: isTextHidden ? Icon(Icons.security) : Icon(Icons.group),
         onPressed: () {
           setState(() {
             isTextHidden = !isTextHidden;
@@ -59,13 +60,13 @@ class _App extends State<App> {
       title: Text("Just Note"),
       actions: [
         IconButton(
-          icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2) , 
-          onPressed: (){
-            setState(() {
-              isDarkTheme = !isDarkTheme;
-              saveDataToStorage();
-            });
-          }),
+            icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2),
+            onPressed: () {
+              setState(() {
+                isDarkTheme = !isDarkTheme;
+                saveDataToStorage();
+              });
+            }),
         IconButton(
           icon: Icon(Icons.accessible_forward),
           onPressed: () {
@@ -78,21 +79,15 @@ class _App extends State<App> {
     );
   }
 
-  /// Get text field foreground color depending on whether you
+  /// Get text font depending on whether you
   /// want to make the text visible
-  Color getTextColor(bool isTextHidden) {
+  String getFontFamily(bool isTextHidden) {
     if (isTextHidden) {
-      if (isDarkTheme) {
-        return Colors.grey[850];
-      } else {
-        return Colors.white;
-      }
+      // custom application font to hide symbols
+      // it is modified "Roboto-regular" font
+      return "hidden";
     } else {
-      if (isDarkTheme) {
-        return Colors.white;
-      } else {
-        return Colors.black87;
-      }
+      return "roboto";
     }
   }
 
