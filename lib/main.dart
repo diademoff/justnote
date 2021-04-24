@@ -17,6 +17,17 @@ class _App extends State<App> {
   bool isTextHidden = true;
   bool isDarkTheme = false;
   TextEditingController textFieldController = new TextEditingController();
+  FocusNode _focusNode = FocusNode(); // used for showing keyboard
+  bool isKeyboardShowing() => MediaQuery.of(context).viewInsets.vertical > 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // call this function after build is complete
+      showKeyboard();
+    });
+  }
 
   bool _firstBuild = true;
   @override
@@ -36,6 +47,7 @@ class _App extends State<App> {
           alignment: Alignment.topCenter,
           constraints: BoxConstraints.expand(),
           child: TextField(
+            focusNode: _focusNode,
             autofocus: true,
             style: TextStyle(
                 fontSize: 18.0, fontFamily: getFontFamily(isTextHidden)),
@@ -75,6 +87,7 @@ class _App extends State<App> {
           onPressed: () {
             setState(() {
               addNumberToTextField();
+              showKeyboard();
             });
           },
         )
@@ -111,6 +124,7 @@ class _App extends State<App> {
 
     setState(() {
       isDarkTheme = prefs.getBool('is_dark_theme') ?? false;
+      setCursorToEnd();
     });
   }
 
@@ -130,5 +144,11 @@ class _App extends State<App> {
   void setCursorToEnd() {
     textFieldController.selection = TextSelection.fromPosition(
         TextPosition(offset: textFieldController.text.length));
+  }
+
+  void showKeyboard() {
+    if (!isKeyboardShowing()) {
+      FocusScope.of(context).requestFocus(_focusNode);
+    }
   }
 }
