@@ -136,7 +136,7 @@ class _App extends State<App> {
   /// The top line of the application with buttons.
   AppBar getAppBar() {
     return AppBar(
-      leading: IconButton(
+      leading: htmlViewmode ? null : IconButton(
         icon: isTextHidden ? Icon(Icons.security) : Icon(Icons.group),
         onPressed: () {
           setState(() {
@@ -162,7 +162,7 @@ class _App extends State<App> {
                 saveDataToStorage();
               });
             }),
-        IconButton(
+        htmlViewmode ? SizedBox() : IconButton(
           icon: Icon(Icons.accessible_forward),
           onPressed: () {
             setState(() {
