@@ -52,14 +52,12 @@ class _App extends State<App> {
             constraints: BoxConstraints.expand(),
             child: Column(
               children: [
+                Expanded(
+                    child: SingleChildScrollView(
+                        child: htmlViewmode ? getHtml() : getTextField())),
                 Container(
                     child:
                         htmlViewmode ? SizedBox() : getTextFormatingActions()),
-                htmlViewmode ? SizedBox() : Divider(),
-                Expanded(
-                  child: SingleChildScrollView(
-                      child: htmlViewmode ? getHtml() : getTextField()),
-                )
               ],
             )),
       ),
@@ -102,12 +100,25 @@ class _App extends State<App> {
     textFieldController.text = text;
 
     // set corrent cursor position
-    textFieldController.selection = TextSelection.fromPosition(
-        TextPosition(offset: endIndex + tag.length));
+    textFieldController.selection =
+        TextSelection.fromPosition(TextPosition(offset: endIndex + tag.length));
   }
 
   Html getHtml() {
-    return Html(data: textFieldController.text);
+    return Html(data: convertToHtml(textFieldController.text));
+  }
+
+  String convertToHtml(String input) {
+    String html = '';
+
+    for (var i = 0; i < input.length; i++) {
+      if (input[i] == '\n') {
+        html += '<br>';
+        continue;
+      }
+      html += input[i];
+    }
+    return html;
   }
 
   TextField getTextField() {
