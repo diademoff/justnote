@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:justnote/TextFormatter.dart';
+import 'package:justnote/textFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String appName = "Just Note";
@@ -16,6 +16,7 @@ class App extends StatefulWidget {
 class _App extends State<App> {
   bool isTextHidden = true;
   bool isDarkTheme = false;
+  
   TextEditingController textFieldController = new TextEditingController();
   FocusNode _focusNode = FocusNode(); // used for showing keyboard
   bool isKeyboardShowing() => MediaQuery.of(context).viewInsets.vertical > 0;

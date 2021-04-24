@@ -4,7 +4,7 @@ class TextFormatter {
 
   TextFormatter(this._text);
 
-  /// Removes white lines
+  /// Removes blank lines from the end of the text
   /// If there are a lot of spaces, then only one will be left.
   void removeWhiteLines() {
     int countOfUnnecessaryChars = 0;
@@ -45,6 +45,7 @@ class TextFormatter {
   }
 
   /// Add next number to the end of text field, like: `5. `.
+  /// If necessary, a line break will be added. 
   void addNumber() {
     int nextNum = _getNextNum();
     String newLine = _needNewLine() ? "\n" : "";
@@ -52,6 +53,7 @@ class TextFormatter {
   }
 
   /// Get the last used number in the numbering and add one to it.
+  /// If last used number is `3` it returns `4`.
   int _getNextNum() {
     if (_text.trim().isEmpty) {
       return 1;

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:justnote/TextFormatter.dart';
+import 'package:justnote/textFormatter.dart';
 
 void main() {
   test('TextFormatter remove blank lines test', () async {
