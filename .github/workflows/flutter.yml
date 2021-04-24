@@ -19,6 +19,8 @@ jobs:
         with:
           channel: "stable"
 
+      - uses: actions/checkout@v1
+
       - name: Install dependencies
         run: flutter pub get
 
