@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:justnote/textFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +17,8 @@ class App extends StatefulWidget {
 class _App extends State<App> {
   bool isTextHidden = true;
   bool isDarkTheme = false;
-  
+  bool htmlViewmode = false;
+
   TextEditingController textFieldController = new TextEditingController();
   FocusNode _focusNode = FocusNode(); // used for showing keyboard
   bool isKeyboardShowing() => MediaQuery.of(context).viewInsets.vertical > 0;
@@ -47,18 +49,25 @@ class _App extends State<App> {
         body: Container(
           alignment: Alignment.topCenter,
           constraints: BoxConstraints.expand(),
-          child: TextField(
-            focusNode: _focusNode,
-            autofocus: true,
-            style: TextStyle(
-                fontSize: 18.0, fontFamily: getFontFamily(isTextHidden)),
-            maxLines: null,
-            keyboardType: TextInputType.multiline,
-            controller: textFieldController,
-            onChanged: (s) => {saveDataToStorage()},
-          ),
+          child: htmlViewmode ? getHtml() : getTextField()
         ),
       ),
+    );
+  }
+
+  Html getHtml() {
+    return Html(data: textFieldController.text);
+  }
+
+  TextField getTextField() {
+    return TextField(
+      focusNode: _focusNode,
+      autofocus: true,
+      style: TextStyle(fontSize: 18.0, fontFamily: getFontFamily(isTextHidden)),
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
+      controller: textFieldController,
+      onChanged: (s) => {saveDataToStorage()},
     );
   }
 
@@ -75,6 +84,13 @@ class _App extends State<App> {
       ),
       title: Text(appName),
       actions: [
+        IconButton(
+          icon: htmlViewmode ? Icon(Icons.text_format) : Icon(Icons.web_sharp), 
+          onPressed: (){
+          setState(() {
+            htmlViewmode = ! htmlViewmode;
+          });
+        }),
         IconButton(
             icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2),
             onPressed: () {
