@@ -1,3 +1,4 @@
+import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:justnote/textFormatter.dart';
@@ -47,12 +48,62 @@ class _App extends State<App> {
       home: Scaffold(
         appBar: getAppBar(),
         body: Container(
-          alignment: Alignment.topCenter,
-          constraints: BoxConstraints.expand(),
-          child: htmlViewmode ? getHtml() : getTextField()
-        ),
+            alignment: Alignment.topCenter,
+            constraints: BoxConstraints.expand(),
+            child: Column(
+              children: [
+                Container(
+                    child:
+                        htmlViewmode ? SizedBox() : getTextFormatingActions()),
+                htmlViewmode ? SizedBox() : Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                      child: htmlViewmode ? getHtml() : getTextField()),
+                )
+              ],
+            )),
       ),
     );
+  }
+
+  /// Format actions panel
+  /// * bold
+  /// * italic
+  /// * underlined
+  Row getTextFormatingActions() {
+    double iconSize = 24;
+    double interval = 5;
+    return Row(
+      children: [
+        InkWell(
+            child: Icon(Icons.format_bold, size: iconSize),
+            onTap: () => setFormat('<b>', '</b>')),
+        SizedBox(width: interval),
+        InkWell(
+            child: Icon(Icons.format_italic, size: iconSize),
+            onTap: () => setFormat('<i>', '</i>')),
+        SizedBox(width: interval),
+        InkWell(
+            child: Icon(Icons.format_underline, size: iconSize),
+            onTap: () => setFormat('<u>', '</u>')),
+      ],
+    );
+  }
+
+  /// Insert tag between selected
+  void setFormat(String tag, String closeTag) {
+    String text = textFieldController.text;
+    int beginIndex = textFieldController.selection.baseOffset;
+    int endIndex = textFieldController.selection.extentOffset;
+
+    text = StringUtils.addCharAtPosition(text, tag, beginIndex);
+    text = StringUtils.addCharAtPosition(text, closeTag, endIndex + tag.length);
+
+    textFieldController.text = text;
+
+    // set corrent cursor position
+    textFieldController.selection = TextSelection.fromPosition(
+        TextPosition(offset: endIndex + tag.length));
   }
 
   Html getHtml() {
@@ -85,12 +136,13 @@ class _App extends State<App> {
       title: Text(appName),
       actions: [
         IconButton(
-          icon: htmlViewmode ? Icon(Icons.text_format) : Icon(Icons.web_sharp), 
-          onPressed: (){
-          setState(() {
-            htmlViewmode = ! htmlViewmode;
-          });
-        }),
+            icon:
+                htmlViewmode ? Icon(Icons.text_format) : Icon(Icons.web_sharp),
+            onPressed: () {
+              setState(() {
+                htmlViewmode = !htmlViewmode;
+              });
+            }),
         IconButton(
             icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2),
             onPressed: () {
