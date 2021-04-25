@@ -1,4 +1,3 @@
-import 'package:basic_utils/basic_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:justnote/textFormatter.dart';
@@ -104,20 +103,19 @@ class _App extends State<App> {
         });
   }
 
-  /// Insert tag between selected
   void setFormat(String tag, String closeTag) {
-    String text = textFieldController.text;
-    int beginIndex = textFieldController.selection.baseOffset;
+    TextFormatter tf = TextFormatter(textFieldController.text);
+    
+    int startIndex = textFieldController.selection.baseOffset;
     int endIndex = textFieldController.selection.extentOffset;
 
-    text = StringUtils.addCharAtPosition(text, tag, beginIndex);
-    text = StringUtils.addCharAtPosition(text, closeTag, endIndex + tag.length);
+    int cursorPos = tf.insertTag(startIndex, endIndex, tag, closeTag);
 
-    textFieldController.text = text;
+    textFieldController.text = tf.formattedText;
 
-    // set corrent cursor position
+    // set correct cursor position
     textFieldController.selection =
-        TextSelection.fromPosition(TextPosition(offset: endIndex + tag.length));
+        TextSelection.fromPosition(TextPosition(offset: cursorPos));
   }
 
   Html getHtml() {
