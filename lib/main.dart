@@ -84,8 +84,24 @@ class _App extends State<App> {
         InkWell(
             child: Icon(Icons.format_underline, size: iconSize),
             onTap: () => setFormat('<u>', '</u>')),
+        Expanded(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [getViewModeSwitchIconButton()]))
       ],
     );
+  }
+
+  /// Iconbutton to switch between html view mode and text mode
+  /// onPressed: `htmlViewmode = !htmlViewmode;`
+  IconButton getViewModeSwitchIconButton() {
+    return IconButton(
+        icon: htmlViewmode ? Icon(Icons.text_format) : Icon(Icons.web_sharp),
+        onPressed: () {
+          setState(() {
+            htmlViewmode = !htmlViewmode;
+          });
+        });
   }
 
   /// Insert tag between selected
@@ -136,24 +152,18 @@ class _App extends State<App> {
   /// The top line of the application with buttons.
   AppBar getAppBar() {
     return AppBar(
-      leading: htmlViewmode ? null : IconButton(
-        icon: isTextHidden ? Icon(Icons.security) : Icon(Icons.group),
-        onPressed: () {
-          setState(() {
-            isTextHidden = !isTextHidden;
-          });
-        },
-      ),
+      leading: htmlViewmode
+          ? getViewModeSwitchIconButton()
+          : IconButton(
+              icon: isTextHidden ? Icon(Icons.security) : Icon(Icons.group),
+              onPressed: () {
+                setState(() {
+                  isTextHidden = !isTextHidden;
+                });
+              },
+            ),
       title: Text(appName),
       actions: [
-        IconButton(
-            icon:
-                htmlViewmode ? Icon(Icons.text_format) : Icon(Icons.web_sharp),
-            onPressed: () {
-              setState(() {
-                htmlViewmode = !htmlViewmode;
-              });
-            }),
         IconButton(
             icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2),
             onPressed: () {
@@ -162,15 +172,17 @@ class _App extends State<App> {
                 saveDataToStorage();
               });
             }),
-        htmlViewmode ? SizedBox() : IconButton(
-          icon: Icon(Icons.accessible_forward),
-          onPressed: () {
-            setState(() {
-              addNumberToTextField();
-              showKeyboard();
-            });
-          },
-        )
+        htmlViewmode
+            ? SizedBox()
+            : IconButton(
+                icon: Icon(Icons.accessible_forward),
+                onPressed: () {
+                  setState(() {
+                    addNumberToTextField();
+                    showKeyboard();
+                  });
+                },
+              )
       ],
     );
   }
