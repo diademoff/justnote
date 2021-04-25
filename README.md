@@ -10,9 +10,10 @@ Simple mobile application to keep your notes with private text input. You can hi
 ![](./preview.png)
 
 ## Features
-* Light and dark theme support
 * Hide the content you write
 * Easily create a numbered list
+* Text markdown support
+* Light and dark theme support
 
 # Installation
 ## Build
