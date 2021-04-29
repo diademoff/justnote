@@ -41,9 +41,14 @@ class _App extends State<App> {
       loadStoredData();
     }
 
+    var appTheme = ThemeData(
+        brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+        primaryColor: isDarkTheme ? Colors.black : Colors.white,
+        accentColor: isDarkTheme ? Colors.white54 : Colors.black54);
+
     return MaterialApp(
       title: appName,
-      theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
+      theme: appTheme,
       home: Scaffold(
         appBar: getAppBar(),
         body: Container(
@@ -105,7 +110,7 @@ class _App extends State<App> {
 
   void setFormat(String tag, String closeTag) {
     TextFormatter tf = TextFormatter(textFieldController.text);
-    
+
     int startIndex = textFieldController.selection.baseOffset;
     int endIndex = textFieldController.selection.extentOffset;
 
