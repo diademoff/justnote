@@ -1,23 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:justnote/settings.dart';
 import 'package:justnote/textFormatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String appName = "Just Note";
 
 void main() {
-  runApp(App());
+  runApp(MyMaterialApp());
+}
+
+class MyMaterialApp extends StatefulWidget {
+  @override
+  _MyMaterialAppState createState() => _MyMaterialAppState();
+}
+
+class _MyMaterialAppState extends State<MyMaterialApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: appName,
+      theme: UserSettings.isDarkTheme ? ThemeData.dark() : ThemeData.light(),
+      home: App(RefreshUI),
+    );
+  }
+
+  void RefreshUI() {
+    setState(() {});
+  }
 }
 
 class App extends StatefulWidget {
+  Function _refreshParent;
+
+  App(this._refreshParent);
+
   @override
-  _App createState() => _App();
+  _App createState() => _App(_refreshParent);
 }
 
 class _App extends State<App> {
   bool isTextHidden = true;
-  bool isDarkTheme = false;
-  bool htmlViewmode = false;
+
+  Function _refreshParent;
+
+  _App(this._refreshParent);
 
   TextEditingController textFieldController = new TextEditingController();
   FocusNode _focusNode = FocusNode(); // used for showing keyboard
@@ -32,160 +58,67 @@ class _App extends State<App> {
     });
   }
 
-  bool _firstBuild = true;
+  bool _firstStart = true;
   @override
   Widget build(BuildContext context) {
-    // This condition is met on first build.
-    if (_firstBuild) {
-      _firstBuild = false;
+    // This condition is met on first start.
+    if (_firstStart) {
+      _firstStart = false;
       loadStoredData();
     }
 
-    var appTheme = ThemeData(
-        brightness: isDarkTheme ? Brightness.dark : Brightness.light,
-        primaryColor: isDarkTheme ? Colors.black : Colors.white,
-        accentColor: isDarkTheme ? Colors.white54 : Colors.black54);
-
-    return MaterialApp(
-      title: appName,
-      theme: appTheme,
-      home: Scaffold(
-        appBar: getAppBar(),
-        body: Container(
-            alignment: Alignment.topCenter,
-            constraints: BoxConstraints.expand(),
-            child: Column(
-              children: [
-                Expanded(
-                    child: SingleChildScrollView(
-                        child: htmlViewmode ? getHtml() : getTextField())),
-                Container(
-                    child:
-                        htmlViewmode ? SizedBox() : getTextFormatingActions()),
-              ],
-            )),
+    return Scaffold(
+      appBar: getAppBar(),
+      body: Container(
+        alignment: Alignment.topCenter,
+        constraints: BoxConstraints.expand(),
+        child: TextField(
+          focusNode: _focusNode,
+          autofocus: true,
+          style: TextStyle(
+              fontSize: 18.0, fontFamily: getFontFamily(isTextHidden)),
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
+          controller: textFieldController,
+          onChanged: (s) => {saveDataToStorage()},
+        ),
       ),
-    );
-  }
-
-  /// Format actions panel
-  /// * bold
-  /// * italic
-  /// * underlined
-  Row getTextFormatingActions() {
-    double iconSize = 24;
-    double interval = 5;
-    return Row(
-      children: [
-        InkWell(
-            child: Icon(Icons.format_bold, size: iconSize),
-            onTap: () => setFormat('<b>', '</b>')),
-        SizedBox(width: interval),
-        InkWell(
-            child: Icon(Icons.format_italic, size: iconSize),
-            onTap: () => setFormat('<i>', '</i>')),
-        SizedBox(width: interval),
-        InkWell(
-            child: Icon(Icons.format_underline, size: iconSize),
-            onTap: () => setFormat('<u>', '</u>')),
-        Expanded(
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [getViewModeSwitchIconButton()]))
-      ],
-    );
-  }
-
-  /// Iconbutton to switch between html view mode and text mode
-  /// onPressed: `htmlViewmode = !htmlViewmode;`
-  IconButton getViewModeSwitchIconButton() {
-    return IconButton(
-        icon: htmlViewmode ? Icon(Icons.text_format) : Icon(Icons.web_sharp),
-        onPressed: () {
-          setState(() {
-            htmlViewmode = !htmlViewmode;
-          });
-        });
-  }
-
-  void setFormat(String tag, String closeTag) {
-    TextFormatter tf = TextFormatter(textFieldController.text);
-
-    int startIndex = textFieldController.selection.baseOffset;
-    int endIndex = textFieldController.selection.extentOffset;
-
-    int cursorPos = tf.insertTag(startIndex, endIndex, tag, closeTag);
-
-    textFieldController.text = tf.formattedText;
-
-    // set correct cursor position
-    textFieldController.selection =
-        TextSelection.fromPosition(TextPosition(offset: cursorPos));
-  }
-
-  Html getHtml() {
-    return Html(data: convertToHtml(textFieldController.text));
-  }
-
-  String convertToHtml(String input) {
-    String html = '';
-
-    for (var i = 0; i < input.length; i++) {
-      if (input[i] == '\n') {
-        html += '<br>';
-        continue;
-      }
-      html += input[i];
-    }
-    return html;
-  }
-
-  TextField getTextField() {
-    return TextField(
-      focusNode: _focusNode,
-      autofocus: true,
-      style: TextStyle(fontSize: 18.0, fontFamily: getFontFamily(isTextHidden)),
-      maxLines: null,
-      keyboardType: TextInputType.multiline,
-      controller: textFieldController,
-      onChanged: (s) => {saveDataToStorage()},
     );
   }
 
   /// The top line of the application with buttons.
   AppBar getAppBar() {
     return AppBar(
-      leading: htmlViewmode
-          ? getViewModeSwitchIconButton()
-          : IconButton(
-              icon: isTextHidden ? Icon(Icons.security) : Icon(Icons.group),
-              onPressed: () {
-                setState(() {
-                  isTextHidden = !isTextHidden;
-                });
-              },
-            ),
+      leading: IconButton(
+        icon: isTextHidden ? Icon(Icons.security) : Icon(Icons.group),
+        onPressed: () {
+          setState(() {
+            isTextHidden = !isTextHidden;
+          });
+        },
+      ),
       title: Text(appName),
       actions: [
         IconButton(
-            icon: isDarkTheme ? Icon(Icons.wb_sunny) : Icon(Icons.brightness_2),
+            icon: UserSettings.isDarkTheme
+                ? Icon(Icons.wb_sunny)
+                : Icon(Icons.brightness_2),
             onPressed: () {
               setState(() {
-                isDarkTheme = !isDarkTheme;
+                UserSettings.isDarkTheme = !UserSettings.isDarkTheme;
+                refreshUI();
                 saveDataToStorage();
               });
             }),
-        htmlViewmode
-            ? SizedBox()
-            : IconButton(
-                icon: Icon(Icons.accessible_forward),
-                onPressed: () {
-                  setState(() {
-                    addNumberToTextField();
-                    showKeyboard();
-                  });
-                },
-              )
+        IconButton(
+          icon: Icon(Icons.accessible_forward),
+          onPressed: () {
+            setState(() {
+              addNumberToTextField();
+              showKeyboard();
+            });
+          },
+        )
       ],
     );
   }
@@ -202,23 +135,20 @@ class _App extends State<App> {
     }
   }
 
-  /// Save the content of text field to memeory
   void saveDataToStorage() async {
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.setString('text', textFieldController.text);
-    prefs.setBool('is_dark_theme', isDarkTheme);
+    UserSettings.text = textFieldController.text;
+
+    UserSettings.Save(prefs);
   }
 
-  /// * Retrieve the text stored in memory and write it to the text field.
-  /// * Gets if the dark theme is used
   void loadStoredData() async {
     final prefs = await SharedPreferences.getInstance();
 
-    textFieldController.text = prefs.getString('text') ?? "";
-
     setState(() {
-      isDarkTheme = prefs.getBool('is_dark_theme') ?? false;
+      UserSettings.Load(prefs);
+      textFieldController.text = UserSettings.text;
       setCursorToEnd();
     });
   }
@@ -245,5 +175,11 @@ class _App extends State<App> {
     if (!isKeyboardShowing()) {
       FocusScope.of(context).requestFocus(_focusNode);
     }
+  }
+
+  void refreshUI() {
+    setState(() {
+      _refreshParent.call();
+    });
   }
 }

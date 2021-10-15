@@ -1,5 +1,3 @@
-import 'package:basic_utils/basic_utils.dart';
-
 class TextFormatter {
   String _text;
   String get formattedText => _text;
@@ -90,17 +88,5 @@ class TextFormatter {
     }
 
     return false;
-  }
-
-  /// Insert tag between selected
-  /// returns cursor position must be
-  int insertTag(int baseOffset, int extentOffset, String tag, String closeTag) {
-    int beginIndex = baseOffset;
-    int endIndex = extentOffset;
-
-    _text = StringUtils.addCharAtPosition(_text, tag, beginIndex);
-    _text = StringUtils.addCharAtPosition(_text, closeTag, endIndex + tag.length);
-
-    return endIndex + tag.length;
   }
 }

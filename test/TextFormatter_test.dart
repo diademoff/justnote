@@ -51,29 +51,4 @@ void main() {
       expect(formatter.formattedText, outputExpected);
     }
   });
-
-  test('TextFormatter insert tag test', () async {
-    var tests = [
-      ['', 0, 0, '<b>', '</b>', '<b></b>', 3],
-      ['test', 0, 4, '<b>', '</b>', '<b>test</b>', 7],
-      ['test', 1, 2, '<u>', '</u>', 't<u>e</u>st', 5]
-    ];
-
-    for (var test in tests) {
-      var input = test[0];
-      var startIndex = test[1];
-      var endIndex = test[2];
-      var tagOpen = test[3];
-      var tagClose = test[4];
-      var output = test[5];
-      var indexMustBe = test[6];
-
-      var formatter = TextFormatter(input);
-
-      var i = formatter.insertTag(startIndex, endIndex, tagOpen, tagClose);
-
-      expect(formatter.formattedText, output);
-      expect(i, indexMustBe);
-    }
-  });
 }
